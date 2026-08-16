@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes,viewport-fit=cover">
   <title>Prepared by Sufiyan for Mohammed Roshan - Gosats</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
@@ -11,9 +11,10 @@
     .cover{height:94%}.cover h1{font-size:3.9vw}.shot-duo{height:88%}.shot-duo .appshot:first-child{transform:translateY(4%)}.fill{height:calc(100% - 22%)}
     @media print{html,body{overflow:visible;background:#fff}.app{display:block}.stage{width:100%;height:auto;box-shadow:none;overflow:visible}.slide{position:relative;width:100%;height:56.25vw;opacity:1;visibility:visible;transform:none;page-break-after:always}.controls,.progress,.overview,.kbd,.experience-link,.mobile-gate,.touch-help{display:none!important}}
     @media(max-width:1000px) and (orientation:landscape){
+      .stage,.slide{touch-action:pan-x pan-y pinch-zoom}
       .slide{padding-bottom:max(86px,calc(env(safe-area-inset-bottom) + 72px));overflow-y:auto;overscroll-behavior:contain;scroll-padding-bottom:90px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
       .slide::-webkit-scrollbar{display:none}
-      .touch-help::after{content:" · scroll for more"}
+      .touch-help::after{content:" · scroll for more · pinch to zoom"}
     }
   </style>
 </head>
@@ -56,6 +57,6 @@
     function show(i){current=(i+slides.length)%slides.length;slides.forEach((s,n)=>s.classList.toggle('active',n===current));slides[current].scrollTop=0;counter.textContent=`${String(current+1).padStart(2,'0')} / ${slides.length}`;progress.style.width=`${((current+1)/slides.length)*100}%`;history.replaceState(null,'',`#${current+1}`)}
     function toggleOverview(force){overview.classList.toggle('open',force===undefined?!overview.classList.contains('open'):force)}
     async function enterPresentation(){try{if(!document.fullscreenElement&&document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen()}catch(e){}try{if(screen.orientation&&screen.orientation.lock)await screen.orientation.lock('landscape')}catch(e){}}document.getElementById('prev').addEventListener('click',()=>show(current-1));document.getElementById('next').addEventListener('click',()=>show(current+1));document.getElementById('grid').addEventListener('click',()=>toggleOverview());document.getElementById('full').addEventListener('click',()=>document.fullscreenElement?document.exitFullscreen():enterPresentation());document.getElementById('present').addEventListener('click',enterPresentation);
-    let touchX=0,touchY=0,touchAt=0;stage.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;touchX=e.touches[0].clientX;touchY=e.touches[0].clientY;touchAt=Date.now()},{passive:true});stage.addEventListener('touchend',e=>{if(!e.changedTouches.length||e.target.closest('button,a,.overview'))return;const t=e.changedTouches[0],dx=t.clientX-touchX,dy=t.clientY-touchY,quick=Date.now()-touchAt<500;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)){show(current+(dx<0?1:-1));return}if(quick&&Math.abs(dx)<16&&Math.abs(dy)<16){if(t.clientX<innerWidth*.3)show(current-1);else if(t.clientX>innerWidth*.7)show(current+1)}},{passive:true});addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();show(current+1)}if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();show(current-1)}if(e.key==='Home')show(0);if(e.key==='End')show(slides.length-1);if(e.key.toLowerCase()==='o')toggleOverview();if(e.key.toLowerCase()==='f')document.getElementById('full').click();if(e.key==='Escape')toggleOverview(false)});show(current);
+    let touchX=0,touchY=0,touchAt=0,pinching=false;stage.addEventListener('touchstart',e=>{pinching=e.touches.length>1;if(pinching)return;touchX=e.touches[0].clientX;touchY=e.touches[0].clientY;touchAt=Date.now()},{passive:true});stage.addEventListener('touchend',e=>{if(pinching){if(e.touches.length===0)pinching=false;return}if(!e.changedTouches.length||e.target.closest('button,a,.overview'))return;const t=e.changedTouches[0],dx=t.clientX-touchX,dy=t.clientY-touchY,quick=Date.now()-touchAt<500;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)){show(current+(dx<0?1:-1));return}if(quick&&Math.abs(dx)<16&&Math.abs(dy)<16){if(t.clientX<innerWidth*.3)show(current-1);else if(t.clientX>innerWidth*.7)show(current+1)}},{passive:true});stage.addEventListener('touchcancel',()=>{pinching=false},{passive:true});addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();show(current+1)}if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();show(current-1)}if(e.key==='Home')show(0);if(e.key==='End')show(slides.length-1);if(e.key.toLowerCase()==='o')toggleOverview();if(e.key.toLowerCase()==='f')document.getElementById('full').click();if(e.key==='Escape')toggleOverview(false)});show(current);
   </script>
 </main></div></body></html>
